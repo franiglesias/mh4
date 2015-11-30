@@ -11,7 +11,7 @@ namespace AppBundle\Domain\It\Device\DeviceStates;
 class FailedDeviceState extends AbstractDeviceState
 {
 
-	public function repair()
+	public function sendToRepair()
 	{
 		return new RepairingDeviceState();
 	}

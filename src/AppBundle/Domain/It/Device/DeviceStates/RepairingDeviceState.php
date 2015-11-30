@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
 /**
-* Devices sent to repair may be fixed or retired
+* Devices sent to sendToRepair may be fixed or retired
 */
 class RepairingDeviceState extends AbstractDeviceState
 {
@@ -20,7 +20,7 @@ class RepairingDeviceState extends AbstractDeviceState
 	
 	public function verbose()
 	{
-		return 'Device is being repaired.';
+		return 'Device is being sendToRepaired.';
 	}
 }
 

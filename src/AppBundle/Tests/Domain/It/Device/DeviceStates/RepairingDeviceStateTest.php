@@ -23,7 +23,7 @@ class RepairingDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	public function testRepairThrowsException()
 	{
 		$State = new RepairingDeviceState();
-		$State->repair();
+		$State->sendToRepair();
 	}
 	
 	public function testReparingDeviceCanBeFixed()

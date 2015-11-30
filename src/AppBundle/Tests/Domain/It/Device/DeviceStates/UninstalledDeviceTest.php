@@ -19,7 +19,7 @@ class UninstalledDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	public function testRepairThrowsException()
 	{
 		$State = new UninstalledDeviceState();
-		$State->repair();
+		$State->sendToRepair();
 	}
 	
 	/**
