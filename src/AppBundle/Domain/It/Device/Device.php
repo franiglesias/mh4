@@ -15,6 +15,7 @@ class Device
 	private $name;
 	private $vendor;
 	private $state;
+	private $installation;
 	
 	public function __construct($name, $vendor)
 	{
@@ -23,9 +24,15 @@ class Device
 		$this->state = new UninstalledDeviceState();
 	}
 	
-	public function install()
+	public function install(Installation $installation)
 	{
 		$this->state = $this->state->install();
+		$this->installation = $installation;
+	}
+	
+	public function repair()
+	{
+		$this->state = $this->state->repair();
 	}
 }
 ?>
