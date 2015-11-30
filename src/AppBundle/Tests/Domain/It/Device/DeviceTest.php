@@ -44,7 +44,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 */	
 	public function testNewDeviceCannotBeSentToRepair(Device $Device)
 	{
-		$Device->repair();
+		$Device->sendToRepair();
 	}
 
 	/**

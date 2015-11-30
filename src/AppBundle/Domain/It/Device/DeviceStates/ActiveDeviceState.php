@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
 /**
- * Active Devices may be sent to repair or retired
+ * Active Devices may be sent to sendToRepair or retired
  *
  * @package default
  * @author Fran Iglesias

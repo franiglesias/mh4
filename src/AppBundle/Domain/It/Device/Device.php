@@ -35,9 +35,9 @@ class Device
 		$this->state = $this->state->fail();
 	}
 	
-	public function repair()
+	public function sendToRepair()
 	{
-		$this->state = $this->state->repair();
+		$this->state = $this->state->sendToRepair();
 	}
 	
 	public function where()
