@@ -23,7 +23,7 @@ class FailedDeviceState extends AbstractDeviceState
 	
 	public function verbose()
 	{
-		return 'Device is installed and running.';
+		return 'Device has failed and is waiting for repair.';
 	}
 }
 
