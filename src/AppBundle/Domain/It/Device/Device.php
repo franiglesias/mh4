@@ -30,6 +30,11 @@ class Device
 		$this->installation = $installation;
 	}
 	
+	public function fail()
+	{
+		$this->state = $this->state->fail();
+	}
+	
 	public function repair()
 	{
 		$this->state = $this->state->repair();

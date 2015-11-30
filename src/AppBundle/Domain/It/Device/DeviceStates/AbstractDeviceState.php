@@ -13,6 +13,11 @@ abstract class AbstractDeviceState implements DeviceStateInterface
 	{
 		throw new \OutOfBoundsException('Device state install transition not allowed', 1);
 	}
+	
+	public function fail()
+	{
+		throw new \OutOfBoundsException('Device state fail transition not allowed', 1);
+	}
 
 	public function repair()
 	{

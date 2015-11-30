@@ -16,10 +16,10 @@ class ActiveDeviceStateTest extends \PHPUnit_Framework_Testcase {
 		$State->install();
 	}
 	
-	public function testCanRepairActiveDevices()
+	public function testActiveDevicesCanFail()
 	{
 		$State = new ActiveDeviceState();
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState', $State->repair());
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\DeviceStates\FailedDeviceState', $State->fail());
 	}
 	
 	/**

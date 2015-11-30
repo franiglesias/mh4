@@ -88,10 +88,10 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 * @depends testDevicesAreInstalledInALocationOnADate
 	 *
 	 */		
-	public function testActiveDeviceCanBeSendToRepair(Device $Device)
+	public function testActiveDeviceCanFail(Device $Device)
 	{
-		$Device->repair();
-		$this->assertAttributeEquals(new RepairingDeviceState(), 'state', $Device);
+		$Device->fail();
+		$this->assertAttributeEquals(new FailedDeviceState(), 'state', $Device);
 	}
 }
 

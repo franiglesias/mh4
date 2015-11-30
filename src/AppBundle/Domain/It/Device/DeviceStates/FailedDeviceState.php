@@ -3,17 +3,17 @@
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
 /**
- * Active Devices may be sent to repair or retired
+ * Failed Devices can be sent to retire or retire
  *
  * @package default
  * @author Fran Iglesias
  */
-class ActiveDeviceState extends AbstractDeviceState
+class FailedDeviceState extends AbstractDeviceState
 {
 
-	public function fail()
+	public function repair()
 	{
-		return new FailedDeviceState();
+		return new RepairingDeviceState();
 	}
 	
 	public function retire()
