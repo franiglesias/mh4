@@ -15,5 +15,15 @@ class Installation
 		$this->location = $location;
 		$this->date = $date;
 	}
+	
+	public function getLocation()
+	{
+		return $this->location;
+	}
+	
+	public function getDate()
+	{
+		return $this->date;
+	}
 }
 ?>

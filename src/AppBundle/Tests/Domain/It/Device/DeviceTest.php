@@ -61,6 +61,16 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		$Device = new Device('Device', new VendorInformation('Apple', 'iMac', 'Serial'));
 		$Device->install(new Installation('Location', new \DateTimeImmutable()));
 		$this->assertAttributeEquals(new Installation('Location', new \DateTimeImmutable()), 'installation', $Device);
+		return $Device;
+	}
+
+	/**
+	 * @depends testDevicesAreInstalledInALocationOnADate
+	 *
+	 */		
+	public function testCanAskADeviceWhereIsItInstalled(Device $Device)
+	{
+		$this->assertEquals('Location', $Device->where()->getLocation());
 	}
 }
 

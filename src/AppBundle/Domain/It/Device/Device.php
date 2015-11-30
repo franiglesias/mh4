@@ -34,5 +34,10 @@ class Device
 	{
 		$this->state = $this->state->repair();
 	}
+	
+	public function where()
+	{
+		return $this->installation;
+	}
 }
 ?>
