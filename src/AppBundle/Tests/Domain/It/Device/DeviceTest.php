@@ -72,6 +72,16 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	{
 		$this->assertEquals('Location', $Device->where()->getLocation());
 	}
+
+	/**
+	 * @depends testDevicesAreInstalledInALocationOnADate
+	 *
+	 */	
+	public function testDeviceCanBeMoved(Device $Device)
+	{
+		$Device->moveTo(new Installation('New Location', new \DateTimeImmutable()));
+		$this->assertEquals('New Location', $Device->where()->getLocation());
+	}
 }
 
 ?>

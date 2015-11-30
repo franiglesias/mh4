@@ -39,5 +39,10 @@ class Device
 	{
 		return $this->installation;
 	}
+	
+	public function moveTo(Installation $installation)
+	{
+		$this->installation = $installation;
+	}
 }
 ?>
