@@ -2,17 +2,15 @@
 
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
-use AppBundle\Domain\It\Device\DeviceStates\AbstractDeviceState;
-
 /**
-* Devices uninstalled may be installed or repaired
+* Devices uninstalled can be installed
 */
 class UninstalledDeviceState extends AbstractDeviceState
 {
 
-	public function install($location, \DateTimeImmutable $date)
+	public function install()
 	{
-		$this->Device->setState(new ActiveDeviceState($this->Device));
+		return new ActiveDeviceState();
 	}
 	
 	public function verbose()

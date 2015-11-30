@@ -2,10 +2,8 @@
 
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
-use AppBundle\Domain\It\Device\DeviceStates\AbstractDeviceState;
-
 /**
-* Devices uninstalled may be installed or repaired
+* You can do nothing with retired devices
 */
 class RetiredDeviceState extends AbstractDeviceState
 {

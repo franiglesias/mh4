@@ -2,23 +2,23 @@
 
 namespace AppBundle\Domain\It\Device\DeviceStates;
 
-use AppBundle\Domain\It\Device\DeviceStates\AbstractDeviceState;
-use AppBundle\Domain\It\Failure\Failure;
-
 /**
-* Devices uninstalled may be installed or repaired
-*/
+ * Active Devices may be sent to repair or retired
+ *
+ * @package default
+ * @author Fran Iglesias
+ */
 class ActiveDeviceState extends AbstractDeviceState
 {
 
-	public function repair(Failure $Failure, $technician)
+	public function repair()
 	{
-		$this->Device->setState(new RepairingDeviceState($this->Device));
+		return new RepairingDeviceState();
 	}
 	
-	public function retire($reason)
+	public function retire()
 	{
-		$this->Device->setState(new RetiredDeviceState($this->Device));
+		return new RetiredDeviceState();
 	}
 	
 	public function verbose()
