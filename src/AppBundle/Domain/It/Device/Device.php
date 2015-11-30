@@ -44,5 +44,6 @@ class Device
 	{
 		$this->installation = $installation;
 	}
+	
 }
 ?>

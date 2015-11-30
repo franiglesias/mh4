@@ -7,6 +7,7 @@ use AppBundle\Domain\It\Device\VendorInformation;
 use AppBundle\Domain\It\Device\Installation;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
+use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
 /**
 * Description
 */
@@ -81,6 +82,16 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	{
 		$Device->moveTo(new Installation('New Location', new \DateTimeImmutable()));
 		$this->assertEquals('New Location', $Device->where()->getLocation());
+	}
+	
+	/**
+	 * @depends testDevicesAreInstalledInALocationOnADate
+	 *
+	 */		
+	public function testActiveDeviceCanBeSendToRepair(Device $Device)
+	{
+		$Device->repair();
+		$this->assertAttributeEquals(new RepairingDeviceState(), 'state', $Device);
 	}
 }
 
