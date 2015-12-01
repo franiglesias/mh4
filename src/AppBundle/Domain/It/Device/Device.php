@@ -20,16 +20,16 @@ class Device
 	private $installation;
 	private $Failures;
 	
-	public function __construct($name, VendorInformation $vendor)
+	private function __construct($name, VendorInformation $vendor)
 	{
 		$this->name = $name;
 		$this->vendor = $vendor;
 		$this->state = new UninstalledDeviceState();
 	}
 	
-	static public function register(DeviceRegisterDTO $DeviceRegisterDTO)
+	static public function register($name, VendorInformation $vendor)
 	{
-		return new self($DeviceRegisterDTO->getName(), new VendorInformation($DeviceRegisterDTO->getVendor(), $DeviceRegisterDTO->getModel(), $DeviceRegisterDTO->getSerial()));
+		return new self($name, $vendor);
 	}
 	
 	public function install(Installation $installation)
