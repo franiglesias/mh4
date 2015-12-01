@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Domain\It\Device;
+namespace AppBundle\Domain\It\Device\ValueObjects;
 
 /**
 * Value Object to Represent Vendor Information for a Device
@@ -16,6 +16,21 @@ class VendorInformation
 		$this->vendor = $vendor;
 		$this->model = $model;
 		$this->serial = $serial;
+	}
+	
+	public function getVendor()
+	{
+		return $this->vendor;
+	}
+	
+	public function getModel()
+	{
+		return $this->model;
+	}
+	
+	public function getSerial()
+	{
+		return $this->serial();
 	}
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Domain\It\Device;
+namespace AppBundle\Domain\It\Device\ValueObjects;
 
 /**
 * Holds installation information

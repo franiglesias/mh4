@@ -3,8 +3,8 @@
 namespace AppBundle\Tests\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\Device;
-use AppBundle\Domain\It\Device\VendorInformation;
-use AppBundle\Domain\It\Device\Installation;
+use AppBundle\Domain\It\Device\ValueObjects\VendorInformation;
+use AppBundle\Domain\It\Device\ValueObjects\Installation;
 use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;

@@ -4,7 +4,9 @@ namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Failure\Failure;
-use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
+use AppBundle\Domain\It\Device\ValueObjects\VendorInformation;
+use AppBundle\Domain\It\Device\ValueObjects\Installation;
+
 /**
 * Represents a Device.
 * 
