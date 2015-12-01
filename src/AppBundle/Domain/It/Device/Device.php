@@ -4,6 +4,7 @@ namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Failure\Failure;
+use AppBundle\Domain\It\Device\Commands\DeviceRegisterCommand;
 /**
 * Represents a Device.
 * 
@@ -19,11 +20,16 @@ class Device
 	private $installation;
 	private $Failures;
 	
-	public function __construct($name, $vendor)
+	public function __construct($name, VendorInformation $vendor)
 	{
 		$this->name = $name;
 		$this->vendor = $vendor;
 		$this->state = new UninstalledDeviceState();
+	}
+	
+	static public function register(DeviceRegisterCommand $DeviceRegisterCommand)
+	{
+		return new self($DeviceRegisterCommand->getName(), new VendorInformation($DeviceRegisterCommand->getVendor(), $DeviceRegisterCommand->getModel(), $DeviceRegisterCommand->getSerial()));
 	}
 	
 	public function install(Installation $installation)

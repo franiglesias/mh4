@@ -5,6 +5,7 @@ namespace AppBundle\Tests\Domain\It\Device;
 use AppBundle\Domain\It\Device\Device;
 use AppBundle\Domain\It\Device\VendorInformation;
 use AppBundle\Domain\It\Device\Installation;
+use AppBundle\Domain\It\Device\Commands\DeviceRegisterCommand;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
@@ -22,6 +23,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		$this->assertAttributeEquals('Device', 'name', $Device);
 		return $Device;
 	}
+	
 	
 	/**
 	 * @depends testANewDeviceHasAName
@@ -59,6 +61,32 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		$Device->install(new Installation('Location', new \DateTimeImmutable()));
 		$this->assertAttributeEquals(new ActiveDeviceState(), 'state', $Device);
 	}
+	
+	
+	public function testRegisterWithCommand()
+	{
+		$Device = Device::register(new DeviceRegisterCommand('Device', 'Apple', 'iMac', '001'));
+		$this->assertAttributeEquals('Device', 'name', $Device);
+		return $Device;
+	}
+	/**
+	 * @depends testRegisterWithCommand
+	 *
+	 */
+	public function testRegisteredDeviceSetsVendor(Device $Device)
+	{
+		$this->assertAttributeEquals(new VendorInformation('Apple', 'iMac', '001'), 'vendor', $Device);
+	}
+
+	/**
+	 * @depends testRegisterWithCommand
+	 *
+	 */
+
+	public function testRegisteredDeviceHasUninstalledState(Device $Device)
+	{
+		$this->assertAttributeEquals(new UninstalledDeviceState(), 'state', $Device);
+	}
 
 	public function testDevicesAreInstalledInALocationOnADate()
 	{
@@ -68,6 +96,17 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		return $Device;
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 *
+	 * @return void
+	 * @author Fran Iglesias
+	 */
+	public function testALocationMustBeProvided()
+	{
+		$Device = new Device('Device', new VendorInformation('Apple', 'iMac', 'Serial'));
+		$Device->install(new Installation(null, new \DateTimeImmutable()));
+	}
 	/**
 	 * @depends testDevicesAreInstalledInALocationOnADate
 	 *

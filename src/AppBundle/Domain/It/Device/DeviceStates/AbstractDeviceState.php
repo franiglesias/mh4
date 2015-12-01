@@ -6,7 +6,7 @@ namespace AppBundle\Domain\It\Device\DeviceStates;
 * Abstract class for Device States. 
 * Define allowed transitions and provides a fallback for transitions not supported by a ConcreteState
 */
-abstract class AbstractDeviceState implements DeviceStateInterface
+abstract class AbstractDeviceState
 {
 		
 	public function install()

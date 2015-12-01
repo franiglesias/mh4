@@ -9,6 +9,8 @@ class Failure
 {
 	private $description;
 	private $reported;
+	private $detected;
+	private $state;
 	
 	function __construct($description)
 	{

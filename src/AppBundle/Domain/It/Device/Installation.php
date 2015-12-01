@@ -12,6 +12,9 @@ class Installation
 	
 	function __construct($location, \DateTimeImmutable $date)
 	{
+		if (empty($location)) {
+			throw new \InvalidArgumentException('Provide a Location to install a Device.');
+		}
 		$this->location = $location;
 		$this->date = $date;
 	}
