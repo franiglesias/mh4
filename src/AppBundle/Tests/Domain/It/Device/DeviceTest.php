@@ -5,7 +5,7 @@ namespace AppBundle\Tests\Domain\It\Device;
 use AppBundle\Domain\It\Device\Device;
 use AppBundle\Domain\It\Device\VendorInformation;
 use AppBundle\Domain\It\Device\Installation;
-use AppBundle\Domain\It\Device\Commands\DeviceRegisterCommand;
+use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
@@ -63,14 +63,14 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	}
 	
 	
-	public function testRegisterWithCommand()
+	public function testRegisterWithDTO()
 	{
-		$Device = Device::register(new DeviceRegisterCommand('Device', 'Apple', 'iMac', '001'));
+		$Device = Device::register(new DeviceRegisterDTO('Device', 'Apple', 'iMac', '001'));
 		$this->assertAttributeEquals('Device', 'name', $Device);
 		return $Device;
 	}
 	/**
-	 * @depends testRegisterWithCommand
+	 * @depends testRegisterWithDTO
 	 *
 	 */
 	public function testRegisteredDeviceSetsVendor(Device $Device)
@@ -79,7 +79,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	}
 
 	/**
-	 * @depends testRegisterWithCommand
+	 * @depends testRegisterWithDTO
 	 *
 	 */
 

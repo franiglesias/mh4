@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Domain\It\Device\Commands;
+namespace AppBundle\Domain\It\Device\DTO;
 
 /**
 * Carries Data to Register a Device
 */
-class DeviceRegisterCommand
+class DeviceRegisterDTO
 {
 	private $name;
 	private $vendor;
