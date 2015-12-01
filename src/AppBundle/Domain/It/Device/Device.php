@@ -3,6 +3,7 @@
 namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
+use AppBundle\Domain\It\Failure\Failure;
 /**
 * Represents a Device.
 * 
@@ -16,6 +17,7 @@ class Device
 	private $vendor;
 	private $state;
 	private $installation;
+	private $Failures;
 	
 	public function __construct($name, $vendor)
 	{
@@ -30,9 +32,10 @@ class Device
 		$this->installation = $installation;
 	}
 	
-	public function fail()
+	public function fail(Failure $Failure)
 	{
 		$this->state = $this->state->fail();
+		$this->Failures[] = $Failure;
 	}
 	
 	public function sendToRepair()
@@ -50,5 +53,9 @@ class Device
 		$this->installation = $installation;
 	}
 	
+	public function getFailures()
+	{
+		return $this->Failures;
+	}
 }
 ?>

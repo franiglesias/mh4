@@ -8,6 +8,9 @@ use AppBundle\Domain\It\Device\Installation;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
+use AppBundle\Domain\It\Device\DeviceStates\FailedDeviceState;
+use AppBundle\Domain\It\Failure\Failure;
+
 /**
 * Description
 */
@@ -88,11 +91,21 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 * @depends testDevicesAreInstalledInALocationOnADate
 	 *
 	 */		
-	public function testActiveDeviceCanFail(Device $Device)
+	public function testActiveDeviceCanFailWithAFailure(Device $Device)
 	{
-		$Device->fail();
+		$Device->fail(new Failure('Failure description'));
 		$this->assertAttributeEquals(new FailedDeviceState(), 'state', $Device);
+		return $Device;
 	}
+	/**
+	 * @depends testActiveDeviceCanFailWithAFailure
+	 *
+	 */		
+	public function testFailAddsFailureToFailureCollection(Device $Device)
+	{
+		$this->assertEquals(1, count($Device->getFailures()));
+	}
+	
 }
 
 ?>
