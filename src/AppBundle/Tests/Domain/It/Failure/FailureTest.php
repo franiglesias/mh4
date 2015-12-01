@@ -19,8 +19,6 @@ class FailureTest extends \PHPUnit_Framework_Testcase
 	 * @depends testFailureHasADescription
 	 *
 	 * @param Failure $Failure 
-	 * @return void
-	 * @author Fran Iglesias
 	 */
 	public function testFAilureAutomaticallySetsAReportedDate(Failure $Failure)
 	{
