@@ -11,10 +11,15 @@ class DeviceName
 	
 	function __construct($name)
 	{
+		$this->name = $this->validName($name);
+	}
+	
+	private function validName($name)
+	{
 		if (empty($name)) {
 			throw new \InvalidArgumentException('Provide a Name to install a Device.');
 		}
-		$this->name = $name;
+		return $name;
 	}
 	
 	public function getName()
