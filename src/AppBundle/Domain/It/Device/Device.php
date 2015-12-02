@@ -4,6 +4,7 @@ namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Failure\Failure;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 
@@ -19,25 +20,25 @@ class Device
 	private $name;
 	private $vendor;
 	private $state;
-	private $installation;
+	private $location;
 	private $Failures;
 	
-	private function __construct($name, DeviceVendor $vendor)
+	private function __construct(DeviceName $name, DeviceVendor $vendor)
 	{
 		$this->name = $name;
 		$this->vendor = $vendor;
 		$this->state = new UninstalledDeviceState();
 	}
 	
-	static public function register($name, DeviceVendor $vendor)
+	static public function register(DeviceName $name, DeviceVendor $vendor)
 	{
 		return new self($name, $vendor);
 	}
 	
-	public function install(DeviceLocation $installation)
+	public function install(DeviceLocation $location)
 	{
 		$this->state = $this->state->install();
-		$this->installation = $installation;
+		$this->location = $location;
 	}
 	
 	public function fail(Failure $Failure)
@@ -53,12 +54,12 @@ class Device
 	
 	public function where()
 	{
-		return $this->installation;
+		return $this->location;
 	}
 	
-	public function moveTo(DeviceLocation $installation)
+	public function moveTo(DeviceLocation $location)
 	{
-		$this->installation = $installation;
+		$this->location = $location;
 	}
 	
 	public function getFailures()

@@ -22,9 +22,5 @@ class DeviceLocation
 		return $this->location;
 	}
 	
-	public function getDate()
-	{
-		return $this->date;
-	}
 }
 ?>

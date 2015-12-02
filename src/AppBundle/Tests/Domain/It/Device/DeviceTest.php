@@ -5,11 +5,13 @@ namespace AppBundle\Tests\Domain\It\Device;
 use AppBundle\Domain\It\Device\Device;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\FailedDeviceState;
+
 use AppBundle\Domain\It\Failure\Failure;
 
 /**
@@ -20,8 +22,8 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 
 	public function testDeviceRegister()
 	{
-		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', '001'));
-		$this->assertAttributeEquals('Device', 'name', $Device);
+		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', '001'));
+		$this->assertAttributeEquals(new DeviceName('Device'), 'name', $Device);
 		return $Device;
 	}
 	
@@ -46,9 +48,9 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 
 	public function testDevicesAreInstalledInALocationOnADate()
 	{
-		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', 'Serial'));
-		$Device->install(new DeviceLocation('Location', new \DateTimeImmutable()));
-		$this->assertAttributeEquals(new DeviceLocation('Location', new \DateTimeImmutable()), 'installation', $Device);
+		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', 'Serial'));
+		$Device->install(new DeviceLocation('Location'));
+		$this->assertAttributeEquals(new DeviceLocation('Location'), 'location', $Device);
 		return $Device;
 	}
 	
@@ -67,7 +69,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		 */	
 		public function testDeviceCanBeMoved(Device $Device)
 		{
-			$Device->moveTo(new DeviceLocation('New Location', new \DateTimeImmutable()));
+			$Device->moveTo(new DeviceLocation('New Location'));
 			$this->assertEquals('New Location', $Device->where()->getLocation());
 		}
 	
@@ -91,15 +93,24 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		}
 
 	/**
-	 * @expectedException \InvalidArgumentException
+	 * @expectedException PHPUnit_Framework_Error
+	 *
+	 */
+	public function test_A_Device_Must_Have_A_Name()
+	{
+		Device::register(false, new DeviceVendor('Apple', 'iMac'));
+	}
+
+	/**
+	 * @expectedException \PHPUnit_Framework_Error
 	 *
 	 * @return void
 	 * @author Fran Iglesias
 	 */
 	public function testALocationMustBeProvided()
 	{
-		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', 'Serial'));
-		$Device->install(new DeviceLocation(null, new \DateTimeImmutable()));
+		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', 'Serial'));
+		$Device->install();
 	}
 	
 }
