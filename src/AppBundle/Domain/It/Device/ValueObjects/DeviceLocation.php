@@ -8,15 +8,13 @@ namespace AppBundle\Domain\It\Device\ValueObjects;
 class DeviceLocation
 {
 	private $location;
-	private $date;
 	
-	function __construct($location, \DateTimeImmutable $date)
+	function __construct($location)
 	{
 		if (empty($location)) {
 			throw new \InvalidArgumentException('Provide a Location to install a Device.');
 		}
 		$this->location = $location;
-		$this->date = $date;
 	}
 	
 	public function getLocation()
