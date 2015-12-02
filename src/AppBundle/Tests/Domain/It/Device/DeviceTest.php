@@ -60,7 +60,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		 */		
 		public function testCanAskADeviceWhereIsItInstalled(Device $Device)
 		{
-			$this->assertEquals('Location', $Device->where()->getLocation());
+			$this->assertEquals('Location', $Device->whereIs()->getLocation());
 		}
 
 		/**
@@ -70,7 +70,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		public function testDeviceCanBeMoved(Device $Device)
 		{
 			$Device->moveTo(new DeviceLocation('New Location'));
-			$this->assertEquals('New Location', $Device->where()->getLocation());
+			$this->assertEquals('New Location', $Device->whereIs()->getLocation());
 		}
 	
 		/**

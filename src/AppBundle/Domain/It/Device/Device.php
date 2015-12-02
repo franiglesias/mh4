@@ -52,7 +52,7 @@ class Device
 		$this->state = $this->state->sendToRepair();
 	}
 	
-	public function where()
+	public function whereIs()
 	{
 		return $this->location;
 	}
