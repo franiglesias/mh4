@@ -3,8 +3,8 @@
 namespace AppBundle\Tests\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\Device;
-use AppBundle\Domain\It\Device\ValueObjects\VendorInformation;
-use AppBundle\Domain\It\Device\ValueObjects\Installation;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
@@ -20,7 +20,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 
 	public function testDeviceRegister()
 	{
-		$Device = Device::register('Device', new VendorInformation('Apple', 'iMac', '001'));
+		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', '001'));
 		$this->assertAttributeEquals('Device', 'name', $Device);
 		return $Device;
 	}
@@ -29,9 +29,9 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		 * @depends testDeviceRegister
 		 *
 		 */
-		public function testRegisteredDeviceSetsVendor(Device $Device)
+		public function testRegisteredDeviceSetsAVendor(Device $Device)
 		{
-			$this->assertAttributeEquals(new VendorInformation('Apple', 'iMac', '001'), 'vendor', $Device);
+			$this->assertAttributeEquals(new DeviceVendor('Apple', 'iMac', '001'), 'vendor', $Device);
 		}
 
 		/**
@@ -46,9 +46,9 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 
 	public function testDevicesAreInstalledInALocationOnADate()
 	{
-		$Device = Device::register('Device', new VendorInformation('Apple', 'iMac', 'Serial'));
-		$Device->install(new Installation('Location', new \DateTimeImmutable()));
-		$this->assertAttributeEquals(new Installation('Location', new \DateTimeImmutable()), 'installation', $Device);
+		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', 'Serial'));
+		$Device->install(new DeviceLocation('Location', new \DateTimeImmutable()));
+		$this->assertAttributeEquals(new DeviceLocation('Location', new \DateTimeImmutable()), 'installation', $Device);
 		return $Device;
 	}
 	
@@ -67,7 +67,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		 */	
 		public function testDeviceCanBeMoved(Device $Device)
 		{
-			$Device->moveTo(new Installation('New Location', new \DateTimeImmutable()));
+			$Device->moveTo(new DeviceLocation('New Location', new \DateTimeImmutable()));
 			$this->assertEquals('New Location', $Device->where()->getLocation());
 		}
 	
@@ -98,8 +98,8 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 */
 	public function testALocationMustBeProvided()
 	{
-		$Device = Device::register('Device', new VendorInformation('Apple', 'iMac', 'Serial'));
-		$Device->install(new Installation(null, new \DateTimeImmutable()));
+		$Device = Device::register('Device', new DeviceVendor('Apple', 'iMac', 'Serial'));
+		$Device->install(new DeviceLocation(null, new \DateTimeImmutable()));
 	}
 	
 }

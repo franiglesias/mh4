@@ -5,7 +5,7 @@ namespace AppBundle\Domain\It\Device\ValueObjects;
 /**
 * Value Object to Represent Vendor Information for a Device
 */
-class VendorInformation
+class DeviceVendor
 {
 	private $vendor;
 	private $model;
@@ -13,9 +13,25 @@ class VendorInformation
 	
 	function __construct($vendor, $model, $serial = 'N/A')
 	{
-		$this->vendor = $vendor;
-		$this->model = $model;
+		$this->vendor = $this->validVendor($vendor);
+		$this->model = $this->validModel($model);
 		$this->serial = $serial;
+	}
+	
+	private function validVendor($vendor)
+	{
+		if (empty($vendor)) {
+			throw new \InvalidArgumentException('Vendor should not empty');
+		}
+		return $vendor;
+	}
+	
+	public function validModel($model)
+	{
+		if (empty($model)) {
+			throw new \InvalidArgumentException('Model should not be empty');
+		}
+		return $model;
 	}
 	
 	public function getVendor()

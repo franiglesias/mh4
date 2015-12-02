@@ -5,7 +5,7 @@ namespace AppBundle\Domain\It\Device\ValueObjects;
 /**
 * Holds installation information
 */
-class Installation
+class DeviceLocation
 {
 	private $location;
 	private $date;
