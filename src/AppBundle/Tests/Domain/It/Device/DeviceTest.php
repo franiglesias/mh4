@@ -103,9 +103,6 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 
 	/**
 	 * @expectedException \PHPUnit_Framework_Error
-	 *
-	 * @return void
-	 * @author Fran Iglesias
 	 */
 	public function testALocationMustBeProvided()
 	{

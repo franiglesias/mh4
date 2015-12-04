@@ -4,6 +4,8 @@ namespace AppBundle\Tests\Domain\EventSourcing;
 
 use AppBundle\Domain\EventSourcing\AggregateRoot;
 use AppBundle\Domain\EventSourcing\DomainEvent;
+use AppBundle\Domain\EventSourcing\EventNotManagedException;
+
 
 class Aggregate extends AggregateRoot {
 	private $id;
@@ -28,6 +30,11 @@ class Aggregate extends AggregateRoot {
 	public function doSomething($message)
 	{
 		$this->recordThat(new EventHappened($this->id, $message));
+	}
+	
+	public function doSomethingUnknown()
+	{
+		$this->recordThat(new EventUnknown($this->id));
 	}
 	
 	protected function applyEventHappened(EventHappened $event)
@@ -68,7 +75,29 @@ class EventHappened implements DomainEvent {
 	}
 }
 
-class AggregateRootTests extends \PHPUnit_Framework_Testcase {
+
+class EventUnknown implements DomainEvent {
+	
+	private $aggregate_id;
+	
+	public function __construct($aggregate_id)
+	{
+		$this->aggregate_id = $aggregate_id;
+	}
+	public function getAggregateId()
+	{
+		return $this->aggregate_id;
+	}
+	
+
+	public function getName()
+	{
+		return 'EventUnknown';
+	}
+}
+
+
+class AggregateRootTest extends \PHPUnit_Framework_Testcase {
 	
 	public function testAggregate()
 	{
@@ -97,6 +126,15 @@ class AggregateRootTests extends \PHPUnit_Framework_Testcase {
 		$B = Aggregate::reconstituteFrom($A->getRecordedEvents());
 		$this->assertEquals(0, count($B->getRecordedEvents()));
 		$this->assertEquals('Hello again', $B->getState());
+	}
+	
+	/**
+	 * @expectedException BadMethodCallException
+	 */
+	public function testExceptionIfAnEventIsNotHandled()
+	{
+		$A = new Aggregate();
+		$A->doSomethingUnknown();
 	}
 	
 }
