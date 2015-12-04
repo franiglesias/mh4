@@ -11,7 +11,7 @@ abstract class AggregateRoot implements RecordsEvents {
 	private $events;
 	
 	/**
-	 * Register an event
+	 * Register and apply an event
 	 *
 	 * @param DomainEvent $event 
 	 * @return void
