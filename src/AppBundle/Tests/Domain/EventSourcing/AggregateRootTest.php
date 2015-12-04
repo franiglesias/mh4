@@ -61,6 +61,11 @@ class EventHappened implements DomainEvent {
 	{
 		return $this->argument;
 	}
+	
+	public function getName()
+	{
+		return 'EventHappened';
+	}
 }
 
 class AggregateRootTests extends \PHPUnit_Framework_Testcase {

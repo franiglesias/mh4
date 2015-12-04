@@ -13,7 +13,7 @@ abstract class AggregateRoot implements RecordsEvents {
 	
 	protected function apply(DomainEvent $event)
 	{
-		$method = 'apply'.substr(strrchr(get_class($event), '\\'), 1);;
+		$method = 'apply'.$event->getName();
 		$this->$method($event);
 	}
 	
