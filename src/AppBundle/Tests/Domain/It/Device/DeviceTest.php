@@ -3,6 +3,7 @@
 namespace AppBundle\Tests\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\Device;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
@@ -20,96 +21,66 @@ use AppBundle\Domain\It\Failure\Failure;
 class DeviceTest extends \PHPUnit_Framework_Testcase
 {
 
-	public function testDeviceRegister()
+	public function test_Acquire_Device_Generates_Device_Was_Acquired_Event()
 	{
-		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', '001'));
-		$this->assertAttributeEquals(new DeviceName('Device'), 'name', $Device);
+		$Device = Device::acquire(new DeviceId(1), new DeviceName('Computer'), new DeviceVendor('Apple', 'iMac'));
+		$events = $Device->getRecordedEvents();
+		$this->assertEquals(1, count($events));
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasAcquired', $events[0]);
 		return $Device;
 	}
 	
-		/**
-		 * @depends testDeviceRegister
-		 *
-		 */
-		public function testRegisteredDeviceSetsAVendor(Device $Device)
-		{
-			$this->assertAttributeEquals(new DeviceVendor('Apple', 'iMac', '001'), 'vendor', $Device);
-		}
-
-		/**
-		 * @depends testDeviceRegister
-		 *
-		 */
-		public function testRegisteredDeviceHasUninstalledState(Device $Device)
-		{
-			$this->assertAttributeEquals(new UninstalledDeviceState(), 'state', $Device);
-		}
-
-
-	public function testDevicesAreInstalledInALocationOnADate()
-	{
-		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', 'Serial'));
-		$Device->install(new DeviceLocation('Location'));
-		$this->assertAttributeEquals(new DeviceLocation('Location'), 'location', $Device);
-		return $Device;
-	}
-	
-		/**
-		 * @depends testDevicesAreInstalledInALocationOnADate
-		 *
-		 */		
-		public function testCanAskADeviceWhereIsItInstalled(Device $Device)
-		{
-			$this->assertEquals('Location', $Device->whereIs()->getLocation());
-		}
-
-		/**
-		 * @depends testDevicesAreInstalledInALocationOnADate
-		 *
-		 */	
-		public function testDeviceCanBeMoved(Device $Device)
-		{
-			$Device->moveTo(new DeviceLocation('New Location'));
-			$this->assertEquals('New Location', $Device->whereIs()->getLocation());
-		}
-	
-		/**
-		 * @depends testDevicesAreInstalledInALocationOnADate
-		 *
-		 */		
-		public function testActiveDeviceCanFailWithAFailure(Device $Device)
-		{
-			$Device->fail(new Failure('Failure description'));
-			$this->assertAttributeEquals(new FailedDeviceState(), 'state', $Device);
-			return $Device;
-		}
-		/**
-		 * @depends testActiveDeviceCanFailWithAFailure
-		 *
-		 */		
-		public function testFailAddsFailureToFailureCollection(Device $Device)
-		{
-			$this->assertEquals(1, count($Device->getFailures()));
-		}
-
 	/**
-	 * @expectedException PHPUnit_Framework_Error
+	 * @depends test_Acquire_Device_Generates_Device_Was_Acquired_Event
 	 *
+	 * @param Device $Device 
 	 */
-	public function test_A_Device_Must_Have_A_Name()
+	public function test_Install_Device_Generates_Device_Was_Installed_Event(Device $Device)
 	{
-		Device::register(false, new DeviceVendor('Apple', 'iMac'));
+		$Device->install(new DeviceLocation('Classroom'));
+		$events = $Device->getRecordedEvents();
+		$this->assertEquals(2, count($events));
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasInstalled', $events[1]);
+		return $Device;
+	}
+	
+	/**
+	 * @depends test_Install_Device_Generates_Device_Was_Installed_Event
+	 * @expectedException OutOfBoundsException
+	 * @param Device $Device 
+	 */	
+	public function test_Installed_Device_Can_Not_Be_Installed_Again(Device $Device)
+	{
+		$Device->install(new DeviceLocation('Another Classroom'));
 	}
 
 	/**
-	 * @expectedException \PHPUnit_Framework_Error
-	 */
-	public function testALocationMustBeProvided()
+	 * @depends test_Install_Device_Generates_Device_Was_Installed_Event
+	 * @param Device $Device 
+	 */	
+	public function test_Installed_Device_Can_Be_Moved_To_Another_Location(Device $Device)
 	{
-		$Device = Device::register(new DeviceName('Device'), new DeviceVendor('Apple', 'iMac', 'Serial'));
-		$Device->install();
+		$Device->move(new DeviceLocation('Another Location'));
+		$events = $Device->getRecordedEvents();
+		$this->assertEquals(3, count($events));
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasMoved', $events[2]);
+		return $Device;
 	}
 	
+	/**
+	 * @depends test_Installed_Device_Can_Be_Moved_To_Another_Location
+	 * @param Device $Device 
+	 */	
+	
+	public function test_Move_To_The_Same_Location_Does_Nothing(Device $Device)
+	{
+		$Device->move(new DeviceLocation('Another Location'));
+		$events = $Device->getRecordedEvents();
+		$this->assertEquals(3, count($events));
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasMoved', $events[2]);
+		return $Device;
+
+	}
 }
 
 ?>

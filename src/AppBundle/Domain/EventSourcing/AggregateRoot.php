@@ -2,6 +2,12 @@
 
 namespace AppBundle\Domain\EventSourcing;
 
+/**
+ * Base class able to record events and handle them
+ *
+ * @package default
+ * @author Francisco Iglesias Gómez
+ */
 abstract class AggregateRoot implements RecordsEvents {
 	/**
 	 * Store latest events
@@ -24,7 +30,7 @@ abstract class AggregateRoot implements RecordsEvents {
 	}
 
 	/**
-	 * Executes the method that handles the event in the aggregate
+	 * Simple locator to excute the method that handles the event in the aggregate
 	 *
 	 * @param DomainEvent $event 
 	 * @return void
@@ -32,7 +38,7 @@ abstract class AggregateRoot implements RecordsEvents {
 	 */
 	protected function apply(DomainEvent $event)
 	{
-		$method = 'apply'.$event->getName();
+		$method = 'apply'.$event->getEvent();
 		if (!method_exists($this, $method)) {
 			throw new \BadMethodCallException($method.' not found.');
 		}

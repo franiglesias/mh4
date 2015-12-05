@@ -22,5 +22,10 @@ class DeviceLocation
 		return $this->location;
 	}
 	
+	public function equals($location)
+	{
+		return strtolower($this->location) == strtolower($location->getLocation());
+	}
+	
 }
 ?>

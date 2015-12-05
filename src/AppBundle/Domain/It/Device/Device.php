@@ -4,10 +4,14 @@ namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Failure\Failure;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
-
+use AppBundle\Domain\EventSourcing\AggregateRoot;
+use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
+use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
+use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
 /**
 * Represents a Device.
 * 
@@ -15,56 +19,85 @@ use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 * Has identity given by his name
 * Has lifecyle: acquired -> installed [-> Repaired ->Fixed]  -> Retired
 */
-class Device
+class Device extends AggregateRoot
 {
+	private $id;
 	private $name;
 	private $vendor;
 	private $state;
 	private $location;
-	private $Failures;
 	
-	private function __construct(DeviceName $name, DeviceVendor $vendor)
+	private function __construct()
 	{
-		$this->name = $name;
-		$this->vendor = $vendor;
 		$this->state = new UninstalledDeviceState();
 	}
 	
-	static public function register(DeviceName $name, DeviceVendor $vendor)
+	static public function acquire(DeviceID $id, DeviceName $name, DeviceVendor $vendor)
 	{
-		return new self($name, $vendor);
+		$device = new self($id, $name, $vendor);
+		$device->recordThat(new DeviceWasAcquired($id, $name, $vendor));
+		return $device;
 	}
-	
+
 	public function install(DeviceLocation $location)
 	{
 		$this->state = $this->state->install();
-		$this->location = $location;
+		$this->recordThat(new DeviceWasInstalled($this->id, $location));
 	}
 	
-	public function fail(Failure $Failure)
+	public function move(DeviceLocation $location)
 	{
-		$this->state = $this->state->fail();
-		$this->Failures[] = $Failure;
+		if ($this->isSameLocation($location)) {
+			return;
+		}
+		$this->recordThat(new DeviceWasMoved($this->id, $location));
 	}
 	
-	public function sendToRepair()
+	private function isSameLocation(DeviceLocation $location)
 	{
-		$this->state = $this->state->sendToRepair();
+		return $this->location->equals($location);
+	}
+	protected function applyDeviceWasAcquired(DeviceWasAcquired $event)
+	{
+		$this->id = $event->getAggregateId();
+		$this->name = $event->getName();
+		$this->vendor = $event->getVendor();
 	}
 	
-	public function whereIs()
+	protected function applyDeviceWasInstalled(DeviceWasInstalled $event)
 	{
-		return $this->location;
+		$this->location = $event->getLocation();
 	}
 	
-	public function moveTo(DeviceLocation $location)
+	protected function applyDeviceWasMoved(DeviceWasMoved $event)
 	{
-		$this->location = $location;
+		$this->location = $event->getLocation();
 	}
-	
-	public function getFailures()
-	{
-		return $this->Failures;
-	}
+	//
+	// public function fail(Failure $Failure)
+	// {
+	// 	$this->state = $this->state->fail();
+	// 	$this->Failures[] = $Failure;
+	// }
+	//
+	// public function sendToRepair()
+	// {
+	// 	$this->state = $this->state->sendToRepair();
+	// }
+	//
+	// public function whereIs()
+	// {
+	// 	return $this->location;
+	// }
+	//
+	// public function moveTo(DeviceLocation $location)
+	// {
+	// 	$this->location = $location;
+	// }
+	//
+	// public function getFailures()
+	// {
+	// 	return $this->Failures;
+	// }
 }
 ?>

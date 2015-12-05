@@ -42,6 +42,14 @@ class DeviceLocationTest extends \PHPUnit_Framework_Testcase
 		$Vendor = new DeviceLocation(null);
 	}
 	
+	public function test_equality_of_locations()
+	{
+		$location = new DeviceLocation('Classroom');
+		$this->assertTrue($location->equals(new DeviceLocation('classroom')));
+		$this->assertTrue($location->equals(new DeviceLocation('CLASSROOM')));
+		$this->assertTrue($location->equals(new DeviceLocation('ClassRoom')));
+	}
+	
 }
 
 

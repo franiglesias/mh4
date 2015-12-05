@@ -5,7 +5,7 @@ namespace AppBundle\Tests\Domain\EventSourcing;
 use AppBundle\Domain\EventSourcing\AggregateRoot;
 use AppBundle\Domain\EventSourcing\DomainEvent;
 use AppBundle\Domain\EventSourcing\EventNotManagedException;
-
+use Ramsey\Uuid\Uuid;
 
 class Aggregate extends AggregateRoot {
 	private $id;
@@ -69,7 +69,7 @@ class EventHappened implements DomainEvent {
 		return $this->argument;
 	}
 	
-	public function getName()
+	public function getEvent()
 	{
 		return 'EventHappened';
 	}
@@ -90,7 +90,7 @@ class EventUnknown implements DomainEvent {
 	}
 	
 
-	public function getName()
+	public function getEvent()
 	{
 		return 'EventUnknown';
 	}
