@@ -7,6 +7,7 @@ use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
 use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
@@ -29,6 +30,17 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasAcquired', $events[0]);
 		return $Device;
 	}
+	
+	/**
+	 * @depends test_Acquire_Device_Generates_Device_Was_Acquired_Event
+	 * @expectedException OutOfBoundsException
+	 * @param Device $Device 
+	 */
+	public function test_Not_Installed_Device_Can_not_be_moved(Device $Device)
+	{
+		$Device->move(new DeviceLocation('Classroom'));
+	}
+	
 	
 	/**
 	 * @depends test_Acquire_Device_Generates_Device_Was_Acquired_Event
@@ -71,7 +83,6 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 * @depends test_Installed_Device_Can_Be_Moved_To_Another_Location
 	 * @param Device $Device 
 	 */	
-	
 	public function test_Move_To_The_Same_Location_Does_Nothing(Device $Device)
 	{
 		$Device->move(new DeviceLocation('Another Location'));
@@ -79,8 +90,23 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		$this->assertEquals(3, count($events));
 		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasMoved', $events[2]);
 		return $Device;
-
 	}
+	
+	/**
+	 * @depends test_Installed_Device_Can_Be_Moved_To_Another_Location
+	 * @param Device $Device 
+	 */	
+	public function test_Installed_Device_Can_Fail(Device $Device)
+	{
+		$Device->fail(new DeviceFailure('A fail', 'User', new \DateTimeImmutable()));
+		$events = $Device->getRecordedEvents();
+		$this->assertEquals(4, count($events));
+		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceFailed', $events[3]);
+		return $Device;
+	}
+	
+	
+	
 }
 
 ?>
