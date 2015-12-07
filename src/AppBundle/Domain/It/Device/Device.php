@@ -20,6 +20,7 @@ use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
 use AppBundle\Domain\It\Device\Events\DeviceFailed;
 use AppBundle\Domain\It\Device\Events\DeviceWasSentToRepair;
 use AppBundle\Domain\It\Device\Events\DeviceWasFixed;
+use AppBundle\Domain\It\Device\Events\DeviceWasRetired;
 /**
 * Represents a Device.
 * 
@@ -121,6 +122,17 @@ class Device extends AggregateRoot
 	protected function applyDeviceWasFixed(DeviceWasFixed $event)
 	{
 		$this->available = true;
+	}
+	
+	public function retire($reason)
+	{
+		$this->state = $this->state->retire();
+		$this->recordThat(new DeviceWasRetired($this->id, $reason));
+	}
+	
+	protected function applyDeviceWasRetired(DeviceWasRetired $evemt)
+	{
+		$this->available = false;
 	}
 }
 ?>

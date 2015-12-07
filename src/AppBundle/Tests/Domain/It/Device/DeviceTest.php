@@ -140,11 +140,21 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 * @expectedException OutOfBoundsException
 	 * @param Device $Device 
 	 */
-	public function test_Do_Not_Fix_A_Device_that_not_need_it(Device $Device)
+	public function test_Do_Not_Fix_A_Device_that_do_not_need_to(Device $Device)
 	{
 		$Device->fix();
 	}
-	
+
+	/**
+	 * @depends test_Install_Device
+	 * @param Device $Device 
+	 */
+	public function test_Device_Retire(Device $Device)
+	{
+		$Device->retire('Reason');
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasRetired');
+		
+	}
 	
 	
 }
