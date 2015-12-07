@@ -13,11 +13,13 @@ use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceTechnician;
 
 use AppBundle\Domain\EventSourcing\AggregateRoot;
+
 use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
 use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
 use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
 use AppBundle\Domain\It\Device\Events\DeviceFailed;
 use AppBundle\Domain\It\Device\Events\DeviceWasSentToRepair;
+use AppBundle\Domain\It\Device\Events\DeviceWasFixed;
 /**
 * Represents a Device.
 * 
@@ -94,7 +96,7 @@ class Device extends AggregateRoot
 		$this->recordThat(new DeviceFailed($this->id, $Failure));
 	}
 	
-	public function applyDeviceFailed(DeviceFailed $event)
+	protected function applyDeviceFailed(DeviceFailed $event)
 	{
 		$this->available = false;
 	}
@@ -105,10 +107,20 @@ class Device extends AggregateRoot
 		$this->recordThat(new DeviceWasSentToRepair($this->id, $failure, $technician));
 	}
 	
-	public function applyDeviceWasSentToRepair(DeviceWasSentToRepair $event)
+	protected function applyDeviceWasSentToRepair(DeviceWasSentToRepair $event)
+	{
+		$this->available = false;
+	}
+
+	public function fix()
+	{
+		$this->state = $this->state->fix();
+		$this->recordThat(new DeviceWasFixed($this->id));
+	}
+	
+	protected function applyDeviceWasFixed(DeviceWasFixed $event)
 	{
 		$this->available = true;
 	}
-
 }
 ?>

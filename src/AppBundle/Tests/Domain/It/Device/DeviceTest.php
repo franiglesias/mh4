@@ -2,6 +2,8 @@
 
 namespace AppBundle\Tests\Domain\It\Device;
 
+use AppBundle\Domain\EventSourcing\RecordsEvents;
+
 use AppBundle\Domain\It\Device\Device;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
@@ -22,18 +24,21 @@ use AppBundle\Domain\It\Failure\Failure;
 */
 class DeviceTest extends \PHPUnit_Framework_Testcase
 {
-
-	public function test_Acquire_Device_Generates_Device_Was_Acquired_Event()
+	private function assertDomainEventWasRecorded(RecordsEvents $RecordsEvents, $eventClass)
+	{
+		$events = $RecordsEvents->getRecordedEvents();
+		$this->assertInstanceOf($eventClass, $events[count($events)-1]);
+	}
+		
+	public function test_Acquire_Device()
 	{
 		$Device = Device::acquire(new DeviceId(1), new DeviceName('Computer'), new DeviceVendor('Apple', 'iMac'));
-		$events = $Device->getRecordedEvents();
-		$this->assertEquals(1, count($events));
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasAcquired', $events[0]);
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasAcquired');
 		return $Device;
 	}
 	
 	/**
-	 * @depends test_Acquire_Device_Generates_Device_Was_Acquired_Event
+	 * @depends test_Acquire_Device
 	 * @expectedException OutOfBoundsException
 	 * @param Device $Device 
 	 */
@@ -44,21 +49,19 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	
 	
 	/**
-	 * @depends test_Acquire_Device_Generates_Device_Was_Acquired_Event
+	 * @depends test_Acquire_Device
 	 *
 	 * @param Device $Device 
 	 */
-	public function test_Install_Device_Generates_Device_Was_Installed_Event(Device $Device)
+	public function test_Install_Device(Device $Device)
 	{
 		$Device->install(new DeviceLocation('Classroom'));
-		$events = $Device->getRecordedEvents();
-		$this->assertEquals(2, count($events));
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasInstalled', $events[1]);
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasInstalled');
 		return $Device;
 	}
 	
 	/**
-	 * @depends test_Install_Device_Generates_Device_Was_Installed_Event
+	 * @depends test_Install_Device
 	 * @expectedException OutOfBoundsException
 	 * @param Device $Device 
 	 */	
@@ -68,15 +71,13 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	}
 
 	/**
-	 * @depends test_Install_Device_Generates_Device_Was_Installed_Event
+	 * @depends test_Install_Device
 	 * @param Device $Device 
 	 */	
 	public function test_Installed_Device_Can_Be_Moved_To_Another_Location(Device $Device)
 	{
 		$Device->move(new DeviceLocation('Another Location'));
-		$events = $Device->getRecordedEvents();
-		$this->assertEquals(3, count($events));
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasMoved', $events[2]);
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasMoved');
 		return $Device;
 	}
 	
@@ -87,22 +88,18 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	public function test_Move_To_The_Same_Location_Does_Nothing(Device $Device)
 	{
 		$Device->move(new DeviceLocation('Another Location'));
-		$events = $Device->getRecordedEvents();
-		$this->assertEquals(3, count($events));
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceWasMoved', $events[2]);
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasMoved');
 		return $Device;
 	}
 	
 	/**
-	 * @depends test_Installed_Device_Can_Be_Moved_To_Another_Location
+	 * @depends test_Install_Device
 	 * @param Device $Device 
 	 */	
 	public function test_Installed_Device_Can_Fail(Device $Device)
 	{
 		$Device->fail(new DeviceFailure('A fail', 'User', new \DateTimeImmutable()));
-		$events = $Device->getRecordedEvents();
-		$this->assertEquals(4, count($events));
-		$this->assertInstanceOf('AppBundle\Domain\It\Device\Events\DeviceFailed', $events[3]);
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceFailed');
 		return $Device;
 	}
 	
@@ -114,8 +111,40 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	public function test_Failed_Device_Can_Be_Send_To_Repair(Device $Device)
 	{
 		$Device->sendToRepair(new DeviceFailure('A fail', 'User', new \DateTimeImmutable()), new DeviceTechnician('SAT'));
-		
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasSentToRepair');
+		return $Device;
 	}
+	
+	/**
+	 * @depends test_Install_Device
+	 * @expectedException OutOfBoundsException
+	 * @param Device $Device 
+	 */
+	public function test_A_Device_That_Has_Not_Failed_Can_Not_Be_Sent_To_Repair(Device $Device)
+	{
+		$Device->sendToRepair(new DeviceFailure('A fail', 'User', new \DateTimeImmutable()), new DeviceTechnician('SAT'));
+	}
+	/**
+	 * @depends test_Installed_Device_Can_Fail
+	 * @param Device $Device 
+	 */
+	public function test_Device_Fix(Device $Device)
+	{
+		$Device->fix();
+		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasFixed');
+		return $Device;
+	}
+	
+	/**
+	 * @depends test_Install_Device
+	 * @expectedException OutOfBoundsException
+	 * @param Device $Device 
+	 */
+	public function test_Do_Not_Fix_A_Device_that_not_need_it(Device $Device)
+	{
+		$Device->fix();
+	}
+	
 	
 	
 }
