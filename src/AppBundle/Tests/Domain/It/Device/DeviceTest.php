@@ -8,7 +8,8 @@ use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
-use AppBundle\Domain\It\Device\DTO\DeviceRegisterDTO;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceTechnician;
+
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
@@ -105,6 +106,16 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 		return $Device;
 	}
 	
+	/**
+	 * @depends test_Installed_Device_Can_Fail
+	 *
+	 * @param Device $Device 
+	 */
+	public function test_Failed_Device_Can_Be_Send_To_Repair(Device $Device)
+	{
+		$Device->sendToRepair(new DeviceFailure('A fail', 'User', new \DateTimeImmutable()), new DeviceTechnician('SAT'));
+		
+	}
 	
 	
 }

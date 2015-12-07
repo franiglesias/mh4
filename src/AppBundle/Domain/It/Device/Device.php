@@ -4,16 +4,20 @@ namespace AppBundle\Domain\It\Device;
 
 use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
 use AppBundle\Domain\It\Failure\Failure;
+
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
+use AppBundle\Domain\It\Device\ValueObjects\DeviceTechnician;
+
 use AppBundle\Domain\EventSourcing\AggregateRoot;
 use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
 use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
 use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
 use AppBundle\Domain\It\Device\Events\DeviceFailed;
+use AppBundle\Domain\It\Device\Events\DeviceWasSentToRepair;
 /**
 * Represents a Device.
 * 
@@ -49,7 +53,6 @@ class Device extends AggregateRoot
 		$this->name = $event->getName();
 		$this->vendor = $event->getVendor();
 	}
-	
 
 	public function install(DeviceLocation $location)
 	{
@@ -91,34 +94,21 @@ class Device extends AggregateRoot
 		$this->recordThat(new DeviceFailed($this->id, $Failure));
 	}
 	
-
 	public function applyDeviceFailed(DeviceFailed $event)
 	{
 		$this->available = false;
 	}
 	
+	public function sendToRepair(DeviceFailure $failure, DeviceTechnician $technician)
+	{
+		$this->state = $this->state->sendToRepair();
+		$this->recordThat(new DeviceWasSentToRepair($this->id, $failure, $technician));
+	}
+	
+	public function applyDeviceWasSentToRepair(DeviceWasSentToRepair $event)
+	{
+		$this->available = true;
+	}
 
-
-
-	//
-	// public function sendToRepair()
-	// {
-	// 	$this->state = $this->state->sendToRepair();
-	// }
-	//
-	// public function whereIs()
-	// {
-	// 	return $this->location;
-	// }
-	//
-	// public function moveTo(DeviceLocation $location)
-	// {
-	// 	$this->location = $location;
-	// }
-	//
-	// public function getFailures()
-	// {
-	// 	return $this->Failures;
-	// }
 }
 ?>
