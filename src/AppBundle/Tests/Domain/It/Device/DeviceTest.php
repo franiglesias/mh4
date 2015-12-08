@@ -130,7 +130,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 */
 	public function test_Device_Fix(Device $Device)
 	{
-		$Device->fix();
+		$Device->fix('Details');
 		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasFixed');
 		return $Device;
 	}
@@ -142,7 +142,7 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	 */
 	public function test_Do_Not_Fix_A_Device_that_do_not_need_to(Device $Device)
 	{
-		$Device->fix();
+		$Device->fix('Details');
 	}
 
 	/**
@@ -153,10 +153,18 @@ class DeviceTest extends \PHPUnit_Framework_Testcase
 	{
 		$Device->retire('Reason');
 		$this->assertDomainEventWasRecorded($Device, 'AppBundle\Domain\It\Device\Events\DeviceWasRetired');
-		
 	}
-	
-	
+	/**
+	 * @depends test_Install_Device
+	 * @param Device $Device 
+	 */
+
+	public function test_Device_History(Device $Device)
+	{
+		$events = $Device->getRecordedEvents();
+		$NewDevice = Device::reconstituteFrom($events);
+		$this->assertTrue($Device->equals($NewDevice));
+	}
 }
 
 ?>

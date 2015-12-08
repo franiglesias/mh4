@@ -2,25 +2,14 @@
 
 namespace AppBundle\Domain\It\Device;
 
-use AppBundle\Domain\It\Device\DeviceStates\UninstalledDeviceState;
+use AppBundle\Domain\It\Device\DeviceStates as States;
 use AppBundle\Domain\It\Failure\Failure;
 
-use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
-use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
-use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
-use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
-use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
-use AppBundle\Domain\It\Device\ValueObjects\DeviceTechnician;
+use AppBundle\Domain\It\Device\ValueObjects as VO;
 
 use AppBundle\Domain\EventSourcing\AggregateRoot;
 
-use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
-use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
-use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
-use AppBundle\Domain\It\Device\Events\DeviceFailed;
-use AppBundle\Domain\It\Device\Events\DeviceWasSentToRepair;
-use AppBundle\Domain\It\Device\Events\DeviceWasFixed;
-use AppBundle\Domain\It\Device\Events\DeviceWasRetired;
+use AppBundle\Domain\It\Device\Events as Events;
 /**
 * Represents a Device.
 * 
@@ -39,37 +28,58 @@ class Device extends AggregateRoot
 	
 	private function __construct()
 	{
-		$this->state = new UninstalledDeviceState();
-		$this->available = false;
+		$this->state = new States\UninstalledDeviceState();
+		
 	}
 	
-	static public function acquire(DeviceID $id, DeviceName $name, DeviceVendor $vendor)
+	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
 		$device = new self($id, $name, $vendor);
-		$device->recordThat(new DeviceWasAcquired($id, $name, $vendor));
+		$device->recordThat(new Events\DeviceWasAcquired($id, $name, $vendor));
 		return $device;
 	}
+	
+	static public function reconstituteFrom($events)
+	{
+		$aggregate = new self();
+		foreach ($events as $event) {
+			$aggregate->apply($event);
+		}
+		return $aggregate;
+	}
+	
+	public function equals(Device $Device)
+	{
+		return (
+		$this->id == $Device->id &&
+		$this->name == $Device->name &&
+		$this->state == $Device->state &&
+		$this->available == $Device->available);
+	}
 
-	protected function applyDeviceWasAcquired(DeviceWasAcquired $event)
+	protected function applyDeviceWasAcquired(Events\DeviceWasAcquired $event)
 	{
 		$this->id = $event->getAggregateId();
 		$this->name = $event->getName();
 		$this->vendor = $event->getVendor();
+		$this->available = false;
+		$this->state = new States\UninstalledDeviceState();
 	}
 
-	public function install(DeviceLocation $location)
+	public function install(VO\DeviceLocation $location)
 	{
 		$this->state = $this->state->install();
-		$this->recordThat(new DeviceWasInstalled($this->id, $location));
+		$this->recordThat(new Events\DeviceWasInstalled($this->id, $location));
 	}
 	
-	protected function applyDeviceWasInstalled(DeviceWasInstalled $event)
+	protected function applyDeviceWasInstalled(Events\DeviceWasInstalled $event)
 	{
 		$this->location = $event->getLocation();
 		$this->available = true;
+		$this->state = new States\ActiveDeviceState();
 	}
 	
-	public function move(DeviceLocation $location)
+	public function move(VO\DeviceLocation $location)
 	{
 		if (!$this->location) {
 			throw new \OutOfBoundsException('Device not installed');
@@ -77,62 +87,66 @@ class Device extends AggregateRoot
 		if ($this->isSameLocation($location)) {
 			return;
 		}
-		$this->recordThat(new DeviceWasMoved($this->id, $location));
+		$this->recordThat(new Events\DeviceWasMoved($this->id, $location));
 	}
 	
-	protected function applyDeviceWasMoved(DeviceWasMoved $event)
+	protected function applyDeviceWasMoved(Events\DeviceWasMoved $event)
 	{
 		$this->location = $event->getLocation();
 		$this->available = true;
 	}
 	
-	private function isSameLocation(DeviceLocation $location)
+	private function isSameLocation(VO\DeviceLocation $location)
 	{
 		return $this->location->equals($location);
 	}
 	
-	public function fail(DeviceFailure $Failure)
+	public function fail(VO\DeviceFailure $Failure)
 	{
 		$this->state = $this->state->fail();
-		$this->recordThat(new DeviceFailed($this->id, $Failure));
+		$this->recordThat(new Events\DeviceFailed($this->id, $Failure));
+		$this->state = new States\FailedDeviceState();
 	}
 	
-	protected function applyDeviceFailed(DeviceFailed $event)
+	protected function applyDeviceFailed(Events\DeviceFailed $event)
 	{
 		$this->available = false;
 	}
 	
-	public function sendToRepair(DeviceFailure $failure, DeviceTechnician $technician)
+	public function sendToRepair(VO\DeviceFailure $failure, VO\DeviceTechnician $technician)
 	{
 		$this->state = $this->state->sendToRepair();
-		$this->recordThat(new DeviceWasSentToRepair($this->id, $failure, $technician));
+		$this->recordThat(new Events\DeviceWasSentToRepair($this->id, $failure, $technician));
 	}
 	
-	protected function applyDeviceWasSentToRepair(DeviceWasSentToRepair $event)
+	protected function applyDeviceWasSentToRepair(Events\DeviceWasSentToRepair $event)
 	{
 		$this->available = false;
+		$this->state = new States\RepairingDeviceState();
 	}
 
-	public function fix()
+	public function fix($details)
 	{
 		$this->state = $this->state->fix();
-		$this->recordThat(new DeviceWasFixed($this->id));
+		$this->recordThat(new Events\DeviceWasFixed($this->id, $details));
 	}
 	
-	protected function applyDeviceWasFixed(DeviceWasFixed $event)
+	protected function applyDeviceWasFixed(Events\DeviceWasFixed $event)
 	{
 		$this->available = true;
+		$this->state = new States\ActiveDeviceState();
 	}
 	
 	public function retire($reason)
 	{
 		$this->state = $this->state->retire();
-		$this->recordThat(new DeviceWasRetired($this->id, $reason));
+		$this->recordThat(new Events\DeviceWasRetired($this->id, $reason));
 	}
 	
-	protected function applyDeviceWasRetired(DeviceWasRetired $evemt)
+	protected function applyDeviceWasRetired(Events\DeviceWasRetired $evemt)
 	{
 		$this->available = false;
+		$this->state = new States\RetiredDeviceState();
 	}
 }
 ?>
