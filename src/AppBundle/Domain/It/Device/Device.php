@@ -29,7 +29,6 @@ class Device extends AggregateRoot
 	private function __construct()
 	{
 		$this->state = new States\UninstalledDeviceState();
-		
 	}
 	
 	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
@@ -51,10 +50,12 @@ class Device extends AggregateRoot
 	public function equals(Device $Device)
 	{
 		return (
-		$this->id == $Device->id &&
-		$this->name == $Device->name &&
-		$this->state == $Device->state &&
-		$this->available == $Device->available);
+			$this->id == $Device->id &&
+			$this->name == $Device->name &&
+			$this->state == $Device->state &&
+			$this->location == $Device->location &&
+			$this->available == $Device->available
+		);
 	}
 
 	protected function applyDeviceWasAcquired(Events\DeviceWasAcquired $event)
