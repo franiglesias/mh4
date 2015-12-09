@@ -2,14 +2,11 @@
 
 namespace AppBundle\Domain\It\Device;
 
-use AppBundle\Domain\It\Device\DeviceStates as States;
-use AppBundle\Domain\It\Failure\Failure;
-
-use AppBundle\Domain\It\Device\ValueObjects as VO;
-
 use AppBundle\Domain\EventSourcing\AggregateRoot;
-
+use AppBundle\Domain\It\Device\DeviceStates as States;
+use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Domain\It\Device\Events as Events;
+
 /**
 * Represents a Device.
 * 
