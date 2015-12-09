@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Domain\It\Device\ValueObjects;
 
-use Ramsey\Uuid\Uuid;
+use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 /**
 * Value Object to Represent Identity of Device Entities
 */
@@ -12,7 +12,7 @@ class DeviceID
 	function __construct($id = false)
 	{
 		if (!$id) {
-			$this->id = Uuid::uuid4()->toString();
+			$this->id = Version4Generator::generate();
 		} else {
 			
 		$this->id = $id;

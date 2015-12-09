@@ -2,7 +2,7 @@
 
 namespace AppBundle\Domain\It\Device;
 
-use AppBundle\Domain\EventSourcing\AggregateRoot;
+use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use AppBundle\Domain\It\Device\DeviceStates as States;
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Domain\It\Device\Events as Events;
@@ -14,7 +14,7 @@ use AppBundle\Domain\It\Device\Events as Events;
 * Has identity given by his name
 * Has lifecyle: acquired -> installed [-> Repaired ->Fixed]  -> Retired
 */
-class Device extends AggregateRoot
+class Device extends EventSourcedAggregateRoot
 {
 	private $id;
 	private $name;
@@ -28,10 +28,15 @@ class Device extends AggregateRoot
 		$this->state = new States\UninstalledDeviceState();
 	}
 	
+	public function getAggregateRootId()
+	{
+		return $this->id;
+	}
+	
 	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
 		$device = new self($id, $name, $vendor);
-		$device->recordThat(new Events\DeviceWasAcquired($id, $name, $vendor));
+		$device->apply(new Events\DeviceWasAcquired($id, $name, $vendor));
 		return $device;
 	}
 	
@@ -67,7 +72,7 @@ class Device extends AggregateRoot
 	public function install(VO\DeviceLocation $location)
 	{
 		$this->state = $this->state->install();
-		$this->recordThat(new Events\DeviceWasInstalled($this->id, $location));
+		$this->apply(new Events\DeviceWasInstalled($this->id, $location));
 	}
 	
 	protected function applyDeviceWasInstalled(Events\DeviceWasInstalled $event)
@@ -85,7 +90,7 @@ class Device extends AggregateRoot
 		if ($this->isSameLocation($location)) {
 			return;
 		}
-		$this->recordThat(new Events\DeviceWasMoved($this->id, $location));
+		$this->apply(new Events\DeviceWasMoved($this->id, $location));
 	}
 	
 	protected function applyDeviceWasMoved(Events\DeviceWasMoved $event)
@@ -102,7 +107,7 @@ class Device extends AggregateRoot
 	public function fail(VO\DeviceFailure $Failure)
 	{
 		$this->state = $this->state->fail();
-		$this->recordThat(new Events\DeviceFailed($this->id, $Failure));
+		$this->apply(new Events\DeviceFailed($this->id, $Failure));
 		$this->state = new States\FailedDeviceState();
 	}
 	
@@ -114,7 +119,7 @@ class Device extends AggregateRoot
 	public function sendToRepair(VO\DeviceFailure $failure, VO\DeviceTechnician $technician)
 	{
 		$this->state = $this->state->sendToRepair();
-		$this->recordThat(new Events\DeviceWasSentToRepair($this->id, $failure, $technician));
+		$this->apply(new Events\DeviceWasSentToRepair($this->id, $failure, $technician));
 	}
 	
 	protected function applyDeviceWasSentToRepair(Events\DeviceWasSentToRepair $event)
@@ -126,7 +131,7 @@ class Device extends AggregateRoot
 	public function fix($details)
 	{
 		$this->state = $this->state->fix();
-		$this->recordThat(new Events\DeviceWasFixed($this->id, $details));
+		$this->apply(new Events\DeviceWasFixed($this->id, $details));
 	}
 	
 	protected function applyDeviceWasFixed(Events\DeviceWasFixed $event)
@@ -138,7 +143,7 @@ class Device extends AggregateRoot
 	public function retire($reason)
 	{
 		$this->state = $this->state->retire();
-		$this->recordThat(new Events\DeviceWasRetired($this->id, $reason));
+		$this->apply(new Events\DeviceWasRetired($this->id, $reason));
 	}
 	
 	protected function applyDeviceWasRetired(Events\DeviceWasRetired $evemt)

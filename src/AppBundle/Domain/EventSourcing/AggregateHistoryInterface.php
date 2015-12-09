@@ -8,7 +8,14 @@ namespace AppBundle\Domain\EventSourcing;
  * @author Francisco Iglesias Gómez
  */
 interface AggregateHistoryInterface {
+	private $aggregate_id;
+	private $events;
 	
+	public function getAggregateId();
+	public function recordEvent(DomainEvent $event);
+	public function getEvents();
+	public function getLastEvent();
+	public function flush();
 }
 
 ?>

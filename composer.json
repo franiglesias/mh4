@@ -1,6 +1,6 @@
 {
     "name": "miralba/mh4",
-    "license": "proprietary",
+    "license": "opensource",
     "type": "project",
     "autoload": {
         "psr-4": {
@@ -18,7 +18,7 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-		"ramsey/uuid": "~3.0"
+		"broadway/broadway": "~0.8"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
