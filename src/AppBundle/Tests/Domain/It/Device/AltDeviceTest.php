@@ -51,7 +51,7 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 	}
 	
 	/**
-	 * @expectedException OutOfBoundsException
+	 * @expectedException UnderflowException
 	 * @param Device $Device 
 	 */
 	public function test_uninstalled_device_cannot_be_moved()
@@ -69,6 +69,27 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 			});
 	}
 	
+	/**
+	 * @expectedException UnderflowException
+	 * @param Device $Device 
+	 */
+	public function test_uninstalled_device_cannot_be_retired()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$location = new VO\DeviceLocation('Classroom');
+		$reason = 'Retire';
+		
+		$this->scenario
+			->withAggregateId($id)
+			->given([new Event\DeviceWasAcquired($id, $name, $vendor)])
+			->when(function ($device) use ($reason) {
+				$device->retire($reason);
+			});
+	}
+	
+
 	public function test_it_can_install_an_acquired_device()
 	{
 		$id = new VO\DeviceId($this->generator->generate());
@@ -86,7 +107,7 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 	}
 	
 	/**
-	 * @expectedException OutOfBoundsException
+	 * @expectedException UnderflowException
 	 * @param Device $Device 
 	 */	
 	public function test_Installed_Device_Can_Not_Be_Installed_Again()
@@ -156,7 +177,8 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 			->withAggregateId($id)
 			->given([
 				new Event\DeviceWasAcquired($id, $name, $vendor),
-				new Event\DeviceWasInstalled($id, $location)])
+				new Event\DeviceWasInstalled($id, $location)
+				])
 			->when(function ($device) use ($failure) {
 				$device->fail($failure);
 			})
@@ -177,7 +199,8 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 			->given([
 				new Event\DeviceWasAcquired($id, $name, $vendor),
 				new Event\DeviceWasInstalled($id, $location),
-				new Event\DeviceFailed($id, $failure)])
+				new Event\DeviceFailed($id, $failure)
+				])
 			->when(function ($device) use ($failure, $technician) {
 				$device->sendToRepair($failure, $technician);
 			})
@@ -185,115 +208,55 @@ class AltDeviceTest extends AggregateRootScenarioTestCase
 		
 	}
 	
-    // /**
-    //  * @test
-    //  */
-    // public function it_can_invite_someone()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->when(function () use ($id) {
-    //             return Invitation::invite($id, 'asm89');
-    //         })
-    //         ->then([new InvitedEvent($id, 'asm89')]);
-    // }
-    //
-    // /**
-    //  * @test
-    //  */
-    // public function new_invites_can_be_accepted()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89')])
-    //         ->when(function ($invite) {
-    //             $invite->accept();
-    //         })
-    //         ->then([new AcceptedEvent($id)]);
-    // }
-    //
-    // /**
-    //  * @test
-    //  */
-    // public function accepting_an_accepted_invite_yields_no_change()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89'), new AcceptedEvent($id)])
-    //         ->when(function ($aggregate) {
-    //             $aggregate->accept();
-    //         })
-    //         ->then([]);
-    // }
-    //
-    // /**
-    //  * @test
-    //  * @expectedException RuntimeException
-    //  * @expectedExceptionMessage Already accepted.
-    //  */
-    // public function an_accepted_invite_cannot_be_declined()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89'), new AcceptedEvent($id)])
-    //         ->when(function ($invite) {
-    //             $invite->decline();
-    //         });
-    // }
-    //
-    // /**
-    //  * @test
-    //  */
-    // public function new_invites_can_be_declined()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89')])
-    //         ->when(function ($invite) {
-    //             $invite->decline();
-    //         })
-    //         ->then([new DeclinedEvent($id)]);
-    // }
-    //
-    // /**
-    //  * @test
-    //  */
-    // public function declining_a_declined_invite_yields_no_change()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89'), new DeclinedEvent($id)])
-    //         ->when(function ($invite) {
-    //             $invite->decline();
-    //         })
-    //         ->then([]);
-    // }
-    //
-    // /**
-    //  * @test
-    //  * @expectedException RuntimeException
-    //  * @expectedExceptionMessage Already declined.
-    //  */
-    // public function a_declined_invite_cannot_be_accepted()
-    // {
-    //     $id = $this->generator->generate();
-    //
-    //     $this->scenario
-    //         ->withAggregateId($id)
-    //         ->given([new InvitedEvent($id, 'asm89'), new DeclinedEvent($id)])
-    //         ->when(function ($invite) {
-    //             $invite->accept();
-    //         });
-    // }
+	public function test_a_device_that_failed_an_was_sent_to_repair_can_be_fixed()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$failure = new VO\DeviceFailure('Failure', 'Reporter', new \DateTimeImmutable());
+		$location = new VO\DeviceLocation('Classroom');
+		$technician = new VO\DeviceTechnician('SAT');
+		$details = 'Fixed';
+		
+		$this->scenario
+			->withAggregateId($id)
+			->given([
+				new Event\DeviceWasAcquired($id, $name, $vendor),
+				new Event\DeviceWasInstalled($id, $location),
+				new Event\DeviceFailed($id, $failure),
+				new Event\DeviceWasSentToRepair($id, $failure, $technician)
+				])
+			->when(function ($device) use ($details) {
+				$device->fix($details);
+			})
+			->then([new Event\DeviceWasFixed($id, $details)]);
+	}
+	
+	public function test_a_device_that_failed_an_was_sent_to_repair_can_be_retired()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$failure = new VO\DeviceFailure('Failure', 'Reporter', new \DateTimeImmutable());
+		$location = new VO\DeviceLocation('Classroom');
+		$technician = new VO\DeviceTechnician('SAT');
+		$details = 'Fixed';
+		$reason = 'Not fixed';
+		
+		$this->scenario
+			->withAggregateId($id)
+			->given([
+				new Event\DeviceWasAcquired($id, $name, $vendor),
+				new Event\DeviceWasInstalled($id, $location),
+				new Event\DeviceFailed($id, $failure),
+				new Event\DeviceWasSentToRepair($id, $failure, $technician)
+				])
+			->when(function ($device) use ($reason) {
+				$device->retire($reason);
+			})
+			->then([new Event\DeviceWasRetired($id, $reason)]);
+	}
+	
+	
+	
 }

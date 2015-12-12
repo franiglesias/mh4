@@ -84,7 +84,7 @@ class Device extends EventSourcedAggregateRoot
 	public function move(VO\DeviceLocation $location)
 	{
 		if (!$this->location) {
-			throw new \OutOfBoundsException('Device not installed');
+			throw new \UnderflowException('Device not installed');
 		}
 		if ($this->isSameLocation($location)) {
 			return;
@@ -107,12 +107,13 @@ class Device extends EventSourcedAggregateRoot
 	{
 		$this->state = $this->state->fail();
 		$this->apply(new Events\DeviceFailed($this->id, $Failure));
-		$this->state = new States\FailedDeviceState();
+		
 	}
 	
 	protected function applyDeviceFailed(Events\DeviceFailed $event)
 	{
 		$this->available = false;
+		$this->state = new States\FailedDeviceState();
 	}
 	
 	public function sendToRepair(VO\DeviceFailure $failure, VO\DeviceTechnician $technician)

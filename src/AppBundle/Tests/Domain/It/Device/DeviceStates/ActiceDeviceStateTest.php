@@ -7,7 +7,7 @@ use AppBundle\Domain\It\Device\DeviceStates\ActiveDeviceState;
 class ActiveDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testInstallThrowsException()
@@ -23,7 +23,7 @@ class ActiveDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testFixThrowsException()

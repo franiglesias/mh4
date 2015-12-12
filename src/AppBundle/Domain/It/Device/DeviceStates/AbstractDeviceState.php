@@ -11,27 +11,27 @@ abstract class AbstractDeviceState
 		
 	public function install()
 	{
-		throw new \OutOfBoundsException('Device state install transition not allowed', 1);
+		throw new \UnderflowException('Device '.get_class($this).' install transition not allowed', 1);
 	}
 	
 	public function fail()
 	{
-		throw new \OutOfBoundsException('Device state fail transition not allowed', 1);
+		throw new \UnderflowException('Device '.get_class($this).' fail transition not allowed', 1);
 	}
 
 	public function sendToRepair()
 	{
-		throw new \OutOfBoundsException('Device state sendToRepair transition not allowed', 1);
+		throw new \UnderflowException('Device '.get_class($this).' sendToRepair transition not allowed', 1);
 	}
 	
 	public function fix()
 	{
-		throw new \OutOfBoundsException('Device state install transition not allowed', 1);
+		throw new \UnderflowException('Device '.get_class($this).' install transition not allowed', 1);
 	}
 	
 	public function retire()
 	{
-		throw new \OutOfBoundsException('Device state retire transition not allowed', 1);
+		throw new \UnderflowException('Device '.get_class($this).' retire transition not allowed', 1);
 	}
 	
 	public function verbose()

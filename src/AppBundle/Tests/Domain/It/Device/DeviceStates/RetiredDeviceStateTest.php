@@ -7,7 +7,7 @@ use AppBundle\Domain\It\Device\DeviceStates\RetiredDeviceState;
 class RetiredDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testInstallThrowsException()
@@ -17,7 +17,7 @@ class RetiredDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testRepairThrowsException()
@@ -27,7 +27,7 @@ class RetiredDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testFixThrowsException()
@@ -37,7 +37,7 @@ class RetiredDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testRetireThrowsException()

@@ -13,7 +13,7 @@ class UninstalledDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testRepairThrowsException()
@@ -23,7 +23,7 @@ class UninstalledDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testFixThrowsException()
@@ -33,7 +33,7 @@ class UninstalledDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testRetireThrowsException()

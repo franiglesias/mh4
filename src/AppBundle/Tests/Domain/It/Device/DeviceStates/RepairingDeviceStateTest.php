@@ -7,7 +7,7 @@ use AppBundle\Domain\It\Device\DeviceStates\RepairingDeviceState;
 class RepairingDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testInstallThrowsException()
@@ -17,7 +17,7 @@ class RepairingDeviceStateTest extends \PHPUnit_Framework_Testcase {
 	}
 	
 	/**
-	 * @expectedException \OutOfBoundsException
+	 * @expectedException \UnderflowException
 	 *
 	 */
 	public function testRepairThrowsException()
