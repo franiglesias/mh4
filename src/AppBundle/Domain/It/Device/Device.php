@@ -3,6 +3,8 @@
 namespace AppBundle\Domain\It\Device;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use Broadway\Domain\DomainEventStreamInterface;
+
 use AppBundle\Domain\It\Device\DeviceStates as States;
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Domain\It\Device\Events as Events;
@@ -35,18 +37,15 @@ class Device extends EventSourcedAggregateRoot
 	
 	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
-		$device = new self($id, $name, $vendor);
+		$device = new self();
 		$device->apply(new Events\DeviceWasAcquired($id, $name, $vendor));
 		return $device;
 	}
 	
-	static public function reconstituteFrom($events)
+	static public function reconstitute()
 	{
-		$aggregate = new self();
-		foreach ($events as $event) {
-			$aggregate->apply($event);
-		}
-		return $aggregate;
+		$device = new self();
+		return $device;
 	}
 	
 	public function equals(Device $Device)

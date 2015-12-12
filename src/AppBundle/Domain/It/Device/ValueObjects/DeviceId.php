@@ -12,7 +12,7 @@ class DeviceID
 	function __construct($id = false)
 	{
 		if (!$id) {
-			$this->id = Version4Generator::generate();
+			$this->id = (new Version4Generator())->generate();
 		} else {
 			
 		$this->id = $id;
