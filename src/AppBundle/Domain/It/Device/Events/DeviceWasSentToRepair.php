@@ -2,12 +2,11 @@
 
 namespace AppBundle\Domain\It\Device\Events;
 
-use AppBundle\Domain\EventSourcing\DomainEvent;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceTechnician;
 
-class DeviceWasSentToRepair implements DomainEvent
+class DeviceWasSentToRepair
 {
 	private $aggregate_id;
 	private $failure;

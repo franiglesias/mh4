@@ -2,11 +2,10 @@
 
 namespace AppBundle\Domain\It\Device\Events;
 
-use AppBundle\Domain\EventSourcing\DomainEvent;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceLocation;
 
-class DeviceWasInstalled implements DomainEvent
+class DeviceWasInstalled
 {
 	private $aggregate_id;
 	private $location;

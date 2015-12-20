@@ -2,11 +2,10 @@
 
 namespace AppBundle\Domain\It\Device\Events;
 
-use AppBundle\Domain\EventSourcing\DomainEvent;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceFailure;
 
-class DeviceWasFixed implements DomainEvent
+class DeviceWasFixed
 {
 	private $aggregate_id;
 	private $details;

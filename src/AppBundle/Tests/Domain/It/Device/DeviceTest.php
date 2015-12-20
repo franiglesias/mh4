@@ -17,7 +17,7 @@ use AppBundle\Domain\It\Device\Events as Event;
  * - Third, the outcome is asserted. This can either be 1) some events are
  *   recorded, or 2) an exception is thrown.
  */
-class AltDeviceTest extends AggregateRootScenarioTestCase
+class DeviceTest extends AggregateRootScenarioTestCase
 {
     private $generator;
 

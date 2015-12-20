@@ -2,12 +2,11 @@
 
 namespace AppBundle\Domain\It\Device\Events;
 
-use AppBundle\Domain\EventSourcing\DomainEvent;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceId;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceName;
 use AppBundle\Domain\It\Device\ValueObjects\DeviceVendor;
 
-class DeviceWasAcquired implements DomainEvent
+class DeviceWasAcquired
 {
 	private $aggregate_id;
 	private $name;
