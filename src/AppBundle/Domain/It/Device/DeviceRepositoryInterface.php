@@ -1,8 +1,7 @@
 <?php
 
 interface DeviceRepositoryInterface {
-	public function get();
-	public function findAll();
-	public function findSatisfying(DeviceSpecification $DeviceSpecification);
+	public function load(DeviceId $id);
+	public function save(Device $Device);
 }
 ?>
