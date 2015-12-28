@@ -32,9 +32,13 @@ class Device extends EventSourcedAggregateRoot
 	
 	public function getAggregateRootId()
 	{
-		return $this->id;
+		return $this->id->getValue();
 	}
 	
+	public function getId()
+	{
+		return $this->id;
+	}
 	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
 		$device = new self();
