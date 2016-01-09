@@ -34,13 +34,4 @@ class InMemoryDeviceRepository implements DeviceRepositoryInterface {
 	}
 }
 
-// class InvitationRepository
-// {
-//     public function __construct(Broadway\EventStore\EventStoreInterface $eventStore, Broadway\EventHandling\EventBusInterface $eventBus)
-//     {
-//         parent::__construct($eventStore, $eventBus, 'Invitation', new Broadway\EventSourcing\AggregateFactory\PublicConstructorAggregateFactory());
-//     }
-// }
-
-
 ?>

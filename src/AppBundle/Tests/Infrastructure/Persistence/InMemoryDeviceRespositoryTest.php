@@ -26,8 +26,8 @@ class InMemoryDeviceRespositoryTest extends \PHPUnit_Framework_Testcase {
         $this->generator = new Version4Generator();
 		
 		$factory =	new \Broadway\EventSourcing\AggregateFactory\NamedConstructorAggregateFactory('reconstitute');
-        $eventStore     = new TraceableEventStore(new InMemoryEventStore());
-        $eventBus       = new SimpleEventBus();
+        $eventStore = new TraceableEventStore(new InMemoryEventStore());
+        $eventBus = new SimpleEventBus();
 		
 		$ESRepo = new InMemoryEventSourcingRepository($eventStore, $eventBus, 'AppBundle\Domain\It\Device\Device', $factory);
 		$this->Repo =  new InMemoryDeviceRepository($ESRepo);

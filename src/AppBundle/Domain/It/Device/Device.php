@@ -39,6 +39,7 @@ class Device extends EventSourcedAggregateRoot
 	{
 		return $this->id;
 	}
+	
 	static public function acquire(VO\DeviceID $id, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
 		$device = new self();
