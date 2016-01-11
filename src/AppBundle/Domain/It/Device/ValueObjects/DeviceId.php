@@ -5,7 +5,7 @@ use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 /**
 * Value Object to Represent Identity of Device Entities
 */
-class DeviceID
+class DeviceId
 {
 	private $id;
 	

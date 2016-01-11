@@ -2,12 +2,14 @@
 
 namespace AppBundle\Domain\It\Device\Commands;
 
+use AppBundle\Domain\It\Device\ValueObjects as VO;
+
 class AcquireDevice {
 	private $deviceId;
 	private $name;
 	private $vendor;
 	
-	public function __construct(DeviceID $deviceId, DeviceName $name, DeviceVendor $vendor)
+	public function __construct(VO\DeviceId $deviceId, VO\DeviceName $name, VO\DeviceVendor $vendor)
 	{
 		$this->deviceId = $deviceId;
 		$this->name = $name;
