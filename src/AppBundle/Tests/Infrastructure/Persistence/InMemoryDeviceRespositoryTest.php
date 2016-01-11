@@ -2,18 +2,12 @@
 
 namespace AppBundle\Tests\Infrastructure\Persistence;
 
-use AppBundle\Infrastructure\Persistence\InMemoryDeviceRepository;
+// use AppBundle\Infrastructure\Persistence\InMemoryDeviceRepository;
 use AppBundle\Domain\It\Device\Device;
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
-use AppBundle\Infrastructure\Persistence\InMemoryEventSourcingRepository;
+use AppBundle\Factories\DeviceFactory;
 
-use Broadway\EventHandling\EventBusInterface;
-use Broadway\EventHandling\SimpleEventBus;
-use Broadway\EventStore\EventStoreInterface;
-use Broadway\EventStore\InMemoryEventStore;
-use Broadway\EventStore\TraceableEventStore;
-use Broadway\EventSourcing\AggregateFactory\NamedConstructorAggregateFactory;
 
 class InMemoryDeviceRespositoryTest extends \PHPUnit_Framework_Testcase {
 	
@@ -24,13 +18,7 @@ class InMemoryDeviceRespositoryTest extends \PHPUnit_Framework_Testcase {
     {
         parent::setUp();
         $this->generator = new Version4Generator();
-		
-		$factory =	new \Broadway\EventSourcing\AggregateFactory\NamedConstructorAggregateFactory('reconstitute');
-        $eventStore = new TraceableEventStore(new InMemoryEventStore());
-        $eventBus = new SimpleEventBus();
-		
-		$ESRepo = new InMemoryEventSourcingRepository($eventStore, $eventBus, 'AppBundle\Domain\It\Device\Device', $factory);
-		$this->Repo =  new InMemoryDeviceRepository($ESRepo);
+		$this->Repo = (new DeviceFactory())->getInMemoryRepository();
 		
     }
 	
