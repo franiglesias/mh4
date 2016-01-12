@@ -8,6 +8,11 @@ use AppBundle\Domain\It\Device\ValueObjects as VO;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use AppBundle\Factories\DeviceFactory;
 
+use Broadway\EventHandling\EventBusInterface;
+use Broadway\EventHandling\SimpleEventBus;
+use Broadway\EventStore\EventStoreInterface;
+use Broadway\EventStore\InMemoryEventStore;
+use Broadway\EventStore\TraceableEventStore;
 
 class InMemoryDeviceRespositoryTest extends \PHPUnit_Framework_Testcase {
 	
@@ -18,8 +23,10 @@ class InMemoryDeviceRespositoryTest extends \PHPUnit_Framework_Testcase {
     {
         parent::setUp();
         $this->generator = new Version4Generator();
-		$this->Repo = (new DeviceFactory())->getInMemoryRepository();
-		
+		$this->Repo = (new DeviceFactory())->getInMemoryRepository(
+			new TraceableEventStore(new InMemoryEventStore()),
+			new SimpleEventBus()
+		);
     }
 	
 	protected function getADevice()

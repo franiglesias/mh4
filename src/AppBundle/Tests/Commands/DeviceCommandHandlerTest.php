@@ -31,7 +31,7 @@ class DeviceCommandHandlerTest extends \Broadway\CommandHandling\Testing\Command
 
     protected function createCommandHandler(\Broadway\EventStore\EventStoreInterface $eventStore, \Broadway\EventHandling\EventBusInterface $eventBus)
     {
-        $repository = (new DeviceFactory())->getInMemoryRepository();
+        $repository = (new DeviceFactory())->getInMemoryRepository($eventStore, $eventBus);
 
         return new DeviceCommandHandler($repository);
     }
