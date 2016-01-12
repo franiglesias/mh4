@@ -20,6 +20,13 @@ class DeviceCommandHandler extends \Broadway\CommandHandling\CommandHandler{
 		$this->repository->save($Device);
 	}
 	
+	public function handleInstallDevice(InstallDevice $installDevice)
+	{
+		$Device = $this->repository->load($installDevice->getDeviceId());
+		$Device->install($installDevice->getLocation());
+		$this->repository->save($Device);
+	}
+	
 }
 
 ?>

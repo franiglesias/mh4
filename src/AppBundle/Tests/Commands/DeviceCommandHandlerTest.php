@@ -4,7 +4,9 @@
 namespace AppBundle\Tests\Commands;
 
 use AppBundle\Domain\It\Device\Commands\AcquireDevice;
+use AppBundle\Domain\It\Device\Commands\InstallDevice;
 use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
+use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
 use AppBundle\Domain\It\Device\Commands\DeviceCommandHandler;
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Factories\DeviceFactory;
@@ -36,9 +38,6 @@ class DeviceCommandHandlerTest extends \Broadway\CommandHandling\Testing\Command
         return new DeviceCommandHandler($repository);
     }
 
-    /**
-     * @test
-     */
     public function test_it_can_acquire_a_device()
     {
 		$id = new VO\DeviceId($this->generator->generate());
@@ -49,6 +48,20 @@ class DeviceCommandHandlerTest extends \Broadway\CommandHandling\Testing\Command
             ->when(new AcquireDevice($id, $name, $vendor))
             ->then([new DeviceWasAcquired($id, $name, $vendor)]);
     }
+
+	public function test_it_can_install_a_device()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$location = new VO\DeviceLocation('Classroom');
+		
+		$this->scenario
+			->withAggregateId($id->getValue())
+				->given([new DeviceWasAcquired($id, $name, $vendor)])
+					->when(new InstallDevice($id, $location))
+						->then([new DeviceWasInstalled($id, $location)]);
+	}
 
     // /**
    //   * @test
