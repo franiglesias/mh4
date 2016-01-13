@@ -8,7 +8,7 @@ use Broadway\EventSourcing\AggregateFactory\NamedConstructorAggregateFactory;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Domain\It\Device\Events as Event;
-/**.
+/**
  *
  * An aggregate root scenario consists of three steps:
  *

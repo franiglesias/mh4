@@ -21,7 +21,7 @@ class DeviceWasRetired
 		return $this->aggregate_id;
 	}
 	
-	public function getLocation()
+	public function getReason()
 	{
 		return $this->reason;
 	}

@@ -14,16 +14,30 @@ class DeviceCommandHandler extends \Broadway\CommandHandling\CommandHandler{
         $this->repository = $repository;
     }
 	
-	public function handleAcquireDevice(AcquireDevice $acquireDevice)
+	public function handleAcquireDevice(AcquireDevice $command)
 	{
-		$Device = Device::acquire($acquireDevice->getDeviceId(), $acquireDevice->getName(), $acquireDevice->getVendor());
+		$Device = Device::acquire($command->getDeviceId(), $command->getName(), $command->getVendor());
 		$this->repository->save($Device);
 	}
 	
-	public function handleInstallDevice(InstallDevice $installDevice)
+	public function handleInstallDevice(InstallDevice $command)
 	{
-		$Device = $this->repository->load($installDevice->getDeviceId());
-		$Device->install($installDevice->getLocation());
+		$Device = $this->repository->load($command->getDeviceId());
+		$Device->install($command->getLocation());
+		$this->repository->save($Device);
+	}
+	
+	public function handleMoveDevice(MoveDevice $command)
+	{
+		$Device = $this->repository->load($command->getDeviceId());
+		$Device->move($command->getLocation());
+		$this->repository->save($Device);
+	}
+	
+	public function handleRetireDevice(RetireDevice $command)
+	{
+		$Device = $this->repository->load($command->getDeviceId());
+		$Device->retire($command->getReason());
 		$this->repository->save($Device);
 	}
 	

@@ -3,11 +3,18 @@
 
 namespace AppBundle\Tests\Commands;
 
+use AppBundle\Domain\It\Device\Commands\DeviceCommandHandler;
+
 use AppBundle\Domain\It\Device\Commands\AcquireDevice;
 use AppBundle\Domain\It\Device\Commands\InstallDevice;
+use AppBundle\Domain\It\Device\Commands\MoveDevice;
+use AppBundle\Domain\It\Device\Commands\RetireDevice;
+
 use AppBundle\Domain\It\Device\Events\DeviceWasAcquired;
 use AppBundle\Domain\It\Device\Events\DeviceWasInstalled;
-use AppBundle\Domain\It\Device\Commands\DeviceCommandHandler;
+use AppBundle\Domain\It\Device\Events\DeviceWasMoved;
+use AppBundle\Domain\It\Device\Events\DeviceWasRetired;
+
 use AppBundle\Domain\It\Device\ValueObjects as VO;
 use AppBundle\Factories\DeviceFactory;
 
@@ -58,94 +65,76 @@ class DeviceCommandHandlerTest extends \Broadway\CommandHandling\Testing\Command
 		
 		$this->scenario
 			->withAggregateId($id->getValue())
-				->given([new DeviceWasAcquired($id, $name, $vendor)])
-					->when(new InstallDevice($id, $location))
-						->then([new DeviceWasInstalled($id, $location)]);
+			->given([new DeviceWasAcquired($id, $name, $vendor)])
+			->when(new InstallDevice($id, $location))
+			->then([new DeviceWasInstalled($id, $location)]);
 	}
 
-    // /**
-   //   * @test
-   //   */
-   //  public function new_invites_can_be_accepted()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89')])
-   //          ->when(new AcceptCommand($id))
-   //          ->then([new AcceptedEvent($id)]);
-   //  }
-   //
-   //  /**
-   //   * @test
-   //   */
-   //  public function accepting_an_accepted_invite_yields_no_change()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89'), new AcceptedEvent($id)])
-   //          ->when(new AcceptCommand($id))
-   //          ->then([]);
-   //  }
-   //
-   //  /**
-   //   * @test
-   //   * @expectedException RuntimeException
-   //   * @expectedExceptionMessage Already accepted.
-   //   */
-   //  public function an_accepted_invite_cannot_be_declined()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89'), new AcceptedEvent($id)])
-   //          ->when(new DeclineCommand($id));
-   //  }
-   //
-   //  /**
-   //   * @test
-   //   */
-   //  public function new_invites_can_be_declined()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89')])
-   //          ->when(new DeclineCommand($id))
-   //          ->then([new DeclinedEvent($id)]);
-   //  }
-   //
-   //  /**
-   //   * @test
-   //   */
-   //  public function declining_a_declined_invite_yields_no_change()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89'), new DeclinedEvent($id)])
-   //          ->when(new DeclineCommand($id))
-   //          ->then([]);
-   //  }
-   //
-   //  /**
-   //   * @test
-   //   * @expectedException RuntimeException
-   //   * @expectedExceptionMessage Already declined.
-   //   */
-   //  public function a_declined_invite_cannot_be_accepted()
-   //  {
-   //      $id = $this->generator->generate();
-   //
-   //      $this->scenario
-   //          ->withAggregateId($id)
-   //          ->given([new InvitedEvent($id, 'asm89'), new DeclinedEvent($id)])
-   //          ->when(new AcceptCommand($id));
-   //  }
+
+	public function test_it_can_move_a_device()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$location = new VO\DeviceLocation('Classroom');
+		$newLocation = new VO\DeviceLocation('Office');
+		
+		$this->scenario
+			->withAggregateId($id->getValue())
+			->given([new DeviceWasAcquired($id, $name, $vendor), new DeviceWasInstalled($id, $location)])
+			->when(new MoveDevice($id, $newLocation))
+			->then([new DeviceWasMoved($id, $newLocation)]);
+	}
+	
+	/**
+	 * @expectedException UnderflowException
+	 */
+
+	public function test_it_can_not_move_a_not_installed_device_throws_exception()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$location = new VO\DeviceLocation('Classroom');
+		$newLocation = new VO\DeviceLocation('Office');
+		
+		$this->scenario
+			->withAggregateId($id->getValue())
+			->given([new DeviceWasAcquired($id, $name, $vendor)])
+			->when(new MoveDevice($id, $newLocation));
+	}
+
+	public function test_move_device_to_the_same_location_should_do_nothing()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$location = new VO\DeviceLocation('Classroom');
+		$newLocation = $location;
+		
+		$this->scenario
+			->withAggregateId($id->getValue())
+			->given([new DeviceWasAcquired($id, $name, $vendor), new DeviceWasInstalled($id, $location)])
+			->when(new MoveDevice($id, $newLocation))
+			->then([]);
+	}
+	
+	/**
+	 * @expectedException UnderflowException
+	 * @param Device $Device 
+	 */
+	public function test_a_not_installed_device_cannot_be_retired()
+	{
+		$id = new VO\DeviceId($this->generator->generate());
+		$name = new VO\DeviceName('Computer');
+		$vendor = new VO\DeviceVendor('Apple', 'iMac');
+		$reason = 'Retire';
+		
+		$this->scenario
+			->withAggregateId($id->getValue())
+			->given([new DeviceWasAcquired($id, $name, $vendor)])
+			->when(new RetireDevice($id, $reason))
+			->then([]);
+	}
+	
 }
